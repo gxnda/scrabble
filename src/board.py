@@ -1,9 +1,12 @@
-from colorama import init, Back, Style
+"""
+Main board file
+"""
 
-from tile import BoardTile
+from colorama import init
+
+from src.tile import BoardTile
 
 init()
-
 
 class Board:
     """
@@ -14,10 +17,9 @@ class Board:
         self.rows = rows
         self.cols = cols
         self.grid: list[list[BoardTile]] = self._create_empty_board()
-        print(self.display())
 
     def _create_empty_board(self):
-        with open("blankboard.txt", "r") as f:
+        with open("blankboard.txt", "rt") as f:
             temp = [line.strip().split() for line in f.readlines()]
         board = []
         for row in temp:
@@ -26,21 +28,27 @@ class Board:
                 tile = BoardTile.quick_create(col)
                 new.append(tile)
             board.append(new)
-
         return board
 
     def display(self):
+        """displays board with colours"""
         for i, row in enumerate(self.grid):
-            print("|".join([tile.get_style() + str(tile) + Back.RESET for tile in row]))
+            print("|".join(str(tile) for tile in row))
             if i < self.rows - 1:
                 print("-" * (self.cols * 2 - 1))
 
-    def place_letter(self, row, col, piece):
+    def get(self, row, col):
+        """gets given tile"""
         if 0 <= row < self.rows and 0 <= col < self.cols:
-            self.grid[row][col] = piece
-        else:
-            raise ValueError("Position out of bounds")
+            return self.grid[row][col]
+        raise ValueError("Position out of bounds")
 
+    def place(self, row, col, letter: str):
+        """places a letter at given tile"""
+        self.get(row, col).place(letter)
 
 if __name__ == "__main__":
     board = Board()
+    board.place(7, 7, "l")
+    board.place(7, 8, "e")
+    board.display()
