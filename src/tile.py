@@ -1,3 +1,6 @@
+from colorama import Back
+
+
 class Tile:
     """
     Basic scrabble tile, can either be blank or have a letter.
@@ -34,8 +37,8 @@ class BoardTile(Tile):
         self.is_word_multiplier = is_word_multiplier
         self.used = False
 
-    @staticmethod
-    def quick_create(creation_str: str):
+    @classmethod
+    def quick_create(cls, creation_str: str):
         """
         Create a BoardTile from a shorthand string.
         Examples:
@@ -51,6 +54,20 @@ class BoardTile(Tile):
             return BoardTile(multiplier=multiplier, is_word_multiplier=True)
         else:
             return BoardTile()
+
+    def get_style(self) -> str:
+        if self.used:
+            return Back.RESET
+        if self.multiplier == 2 and not self.is_word_multiplier:
+            return Back.CYAN
+        elif self.multiplier == 3 and not self.is_word_multiplier:
+            return Back.BLUE
+        elif self.multiplier == 2 and self.is_word_multiplier:
+            return Back.MAGENTA
+        elif self.multiplier == 3 and self.is_word_multiplier:
+            return Back.RED
+        else:
+            return Back.RESET
 
     def use_tile(self):
         self.used = True
