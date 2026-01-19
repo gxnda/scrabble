@@ -78,9 +78,7 @@ class Game:
 
     # Stuff for API
 
-    def _check_word_placement(
-        self, start_row: int, start_col, word: str, is_vertical: bool
-    ):
+    def _check_word_fits(self, start_row: int, start_col, word: str, is_vertical: bool):
         """check if placement is empty or duplicate letter"""
         for i, char in enumerate(word):
             if is_vertical:
@@ -100,5 +98,9 @@ class Game:
 
         Ends the current players turn afterwards.
         """
-        if not word in self.dictionary:
-            raise ValueError(f"{word} is not a valid word")
+        connecting_words = self.get_connecting_words(
+            start_row, start_col, word, is_vertical
+        )
+        for connecting in connecting_words:
+            if connecting not in self.dictionary:
+                raise ValueError(f"{connecting} is not in {self.dictionary}.")
