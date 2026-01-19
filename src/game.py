@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Iterator
 
 from src.board import Board
 from src.dictionary import Dictionary
@@ -19,6 +20,15 @@ class Game:
 
     def __increment_turn_counter(self):
         self.player_turn = (self.player_turn + 1) % len(self.players)
+
+    @staticmethod
+    def calculate_word_score(word_tiles: Iterator[BoardTile]):
+        total_score, total_mult = 0, 1
+        for tile in word_tiles:
+            score, mult = tile.calculate_score()
+            total_score += score
+            total_mult *= mult
+        return total_score * total_mult
 
     def __find_connected(self, row, col, look_vertical: bool) -> list[BoardTile]:
         offset = col if look_vertical else row
@@ -79,7 +89,7 @@ class Game:
             else:
                 board_tile = self.board.get(start_row, start_col + i)
 
-            if not board_tile.is_empty() or board_tile.letter != char:
+            if not board_tile.is_empty() and board_tile.letter != char:
                 raise ValueError(
                     f"{word} has invalid placement at {start_row + i}, {start_col + i}"
                 )
