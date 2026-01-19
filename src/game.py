@@ -72,7 +72,7 @@ class Game:
                 )
             )
 
-        # TODO: Check parallel as well
+        words.append(self.__find_connected(row, col, is_vertical))
 
         return words
 
