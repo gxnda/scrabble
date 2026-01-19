@@ -12,18 +12,6 @@ class Tile:
         """Initialize a tile with an optional letter (default is blank). Use "?" for blank tiles."""
         self.letter = letter
 
-    def is_empty(self) -> bool:
-        return self.letter == " "
-
-    def place(self, letter: str):
-        if self.is_empty():
-            self.letter = letter
-        else:
-            raise ValueError("Tile already has a letter")
-
-    def clear(self):
-        self.letter = " "
-
     def __str__(self):
         return self.letter
 
@@ -37,6 +25,21 @@ class BoardTile(Tile):
         super().__init__()
         self.multiplier = multiplier
         self.is_word_multiplier = is_word_multiplier
+
+    def is_empty(self) -> bool:
+        return self.letter == " "
+
+    def clear(self):
+        self.letter = " "
+
+    def place(self, lettertile: str | Tile):
+        if self.is_empty():
+            raise ValueError("Tile already has a letter")
+
+        if isinstance(lettertile, Tile):
+            self.letter = lettertile.letter
+        elif isinstance(lettertile, str):
+            self.letter = lettertile
 
     @classmethod
     def quick_create(cls, creation_str: str):
