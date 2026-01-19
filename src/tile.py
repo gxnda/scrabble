@@ -15,6 +15,9 @@ class Tile:
     def __str__(self):
         return self.letter
 
+    def __bool__(self):
+        return self.letter not in [" ", "", None]
+
 
 class BoardTile(Tile):
     """
