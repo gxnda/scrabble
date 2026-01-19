@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 from src.board import Board
 from src.dictionary import Dictionary
@@ -15,21 +14,15 @@ class Game:
         self.players: list[Player] = []
         self.player_turn: int = 0
 
-        self.last_placed_tile: Optional[BoardTile] = None
-
     def add_player(self, player: Player):
         self.players.append(player)
 
     def __increment_turn_counter(self):
         self.player_turn = (self.player_turn + 1) % len(self.players)
 
-    def end_turn(self):
-        self.last_placed_tile = None
-        self.__increment_turn_counter()
-
-    def __find_connected(self, row, col, look_vertical: bool):
+    def __find_connected(self, row, col, look_vertical: bool) -> list[BoardTile]:
         offset = col if look_vertical else row
-        for offset in range(offset-1, -1, -1):
+        for offset in range(offset - 1, -1, -1):
             tile = self.board.get(
                 row + (offset if look_vertical else 0),
                 col + (offset if not look_vertical else 0),
@@ -38,7 +31,7 @@ class Game:
             if not tile.letter:
                 break
 
-        word = ""
+        word_tiles = []
         max_size = self.board.cols if look_vertical else self.board.rows
         for i in range(offset, max_size):
             tile = self.board.get(
@@ -49,13 +42,13 @@ class Game:
             if not tile.letter:
                 break
 
-            word = word + tile.letter
+            word_tiles.append(tile)
 
-        return word
+        return word_tiles
 
     def get_connecting_words(
         self, row: int, col: int, word: str, is_vertical: bool
-    ) -> list[str]:
+    ) -> list[list[BoardTile]]:
         """
         Gets all words connecting to a given word if it was placed on the board.
         It does not care if the word is valid.
@@ -102,5 +95,6 @@ class Game:
             start_row, start_col, word, is_vertical
         )
         for connecting in connecting_words:
-            if connecting not in self.dictionary:
+            parsed_connecting_word = "".join(char.letter for char in connecting)
+            if parsed_connecting_word not in self.dictionary:
                 raise ValueError(f"{connecting} is not in {self.dictionary}.")
