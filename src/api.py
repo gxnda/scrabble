@@ -1,9 +1,9 @@
 import time
 from copy import deepcopy
 
+
 class MoveException(Exception):
     pass
-
 
 class EarlyExitException(Exception):
     pass
