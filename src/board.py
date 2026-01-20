@@ -2,6 +2,7 @@
 Main board file
 """
 
+from pathlib import Path
 from colorama import init
 
 from src.tile import BoardTile
@@ -22,7 +23,8 @@ class Board:
         return not any(any(row) for row in self.grid)
 
     def _create_empty_board(self):
-        with open("blankboard.txt", "rt") as f:
+        board_file = Path(__file__).parent / "blankboard.txt"
+        with open(board_file, "rt") as f:
             temp = [line.strip().split() for line in f.readlines()]
         board = []
         for row in temp:
