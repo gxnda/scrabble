@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Iterator
 
 from src.board import Board
 from src.dictionary import Dictionary
@@ -15,21 +15,24 @@ class Game:
         self.players: list[Player] = []
         self.player_turn: int = 0
 
-        self.last_placed_tile: Optional[BoardTile] = None
-
     def add_player(self, player: Player):
         self.players.append(player)
 
     def __increment_turn_counter(self):
         self.player_turn = (self.player_turn + 1) % len(self.players)
 
-    def end_turn(self):
-        self.last_placed_tile = None
-        self.__increment_turn_counter()
+    @staticmethod
+    def calculate_word_score(word_tiles: Iterator[BoardTile]):
+        total_score, total_mult = 0, 1
+        for tile in word_tiles:
+            score, mult = tile.calculate_score()
+            total_score += score
+            total_mult *= mult
+        return total_score * total_mult
 
-    def __find_connected(self, row, col, look_vertical: bool):
+    def __find_connected(self, row, col, look_vertical: bool) -> list[BoardTile]:
         offset = col if look_vertical else row
-        for offset in range(offset-1, -1, -1):
+        for offset in range(offset - 1, -1, -1):
             tile = self.board.get(
                 row + (offset if look_vertical else 0),
                 col + (offset if not look_vertical else 0),
@@ -38,7 +41,7 @@ class Game:
             if not tile.letter:
                 break
 
-        word = ""
+        word_tiles = []
         max_size = self.board.cols if look_vertical else self.board.rows
         for i in range(offset, max_size):
             tile = self.board.get(
@@ -49,13 +52,13 @@ class Game:
             if not tile.letter:
                 break
 
-            word = word + tile.letter
+            word_tiles.append(tile)
 
-        return word
+        return word_tiles
 
     def get_connecting_words(
         self, row: int, col: int, word: str, is_vertical: bool
-    ) -> list[str]:
+    ) -> list[list[BoardTile]]:
         """
         Gets all words connecting to a given word if it was placed on the board.
         It does not care if the word is valid.
@@ -78,9 +81,7 @@ class Game:
 
     # Stuff for API
 
-    def _check_word_placement(
-        self, start_row: int, start_col, word: str, is_vertical: bool
-    ):
+    def _check_word_fits(self, start_row: int, start_col, word: str, is_vertical: bool):
         """check if placement is empty or duplicate letter"""
         for i, char in enumerate(word):
             if is_vertical:
@@ -88,7 +89,7 @@ class Game:
             else:
                 board_tile = self.board.get(start_row, start_col + i)
 
-            if not board_tile.is_empty() or board_tile.letter != char:
+            if not board_tile.is_empty() and board_tile.letter != char:
                 raise ValueError(
                     f"{word} has invalid placement at {start_row + i}, {start_col + i}"
                 )
@@ -100,5 +101,10 @@ class Game:
 
         Ends the current players turn afterwards.
         """
-        if not word in self.dictionary:
-            raise ValueError(f"{word} is not a valid word")
+        connecting_words = self.get_connecting_words(
+            start_row, start_col, word, is_vertical
+        )
+        for connecting in connecting_words:
+            parsed_connecting_word = "".join(char.letter for char in connecting)
+            if parsed_connecting_word not in self.dictionary:
+                raise ValueError(f"{connecting} is not in {self.dictionary}.")
