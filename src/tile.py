@@ -85,6 +85,9 @@ class TileBag:
     def __init__(self):
         # Scrabble tile distribution:
         """
+        Makes a shuffled list of tiles, also look here for all tile score
+        values and distributions.
+
         From wikipedia:
         2 blank tiles (scoring 0 points)
         1 point: E ×12, A ×9, I ×9, O ×8, N ×6, R ×6, T ×6, L ×4, S ×4, U ×4
