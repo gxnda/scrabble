@@ -131,6 +131,10 @@ class BoardTile(Tile):
         self.is_word_multiplier = is_word_multiplier
         self.used_up = False
 
+    def use_up(self):
+        """Remove multiplier"""
+        self.used_up = True
+
     def is_empty(self) -> bool:
         return self.letter == " "
 
@@ -153,9 +157,8 @@ class BoardTile(Tile):
         """
         if self.used_up or self.is_empty():
             return (0, 0)
-        self.used_up = True
+        # NOTE: self.used_up is set in place_word after everything is done.
         letter_score = TileBag.scores[self.letter]
-
         if self.is_word_multiplier:
             return (letter_score, self.multiplier)
 
