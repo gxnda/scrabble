@@ -1,27 +1,74 @@
+import random
 from pathlib import Path
 
 from src.board import Board
 from src.dictionary import Dictionary
 from src.player import Player
-from src.tile import BoardTile
+from src.tile import BoardTile, TileBag
 
 
 class NotAWordException(Exception):
     pass
 
 class Game:
-    def __init__(self):
+    HAND_SIZE = 7
+    def __init__(self, players=None):
+        if not players:
+            players = []
         self.board = Board()
+        self.tile_bag = TileBag()
         dict_path = Path(__file__).parent.parent / "dicts" / "sowpods.txt"
         self.dictionary = Dictionary(dict_path)
-        self.players: list[Player] = []
+        self.players: list[Player] = players
+        self.current_player: Player | None = None
         self.player_turn: int = 0
+
+        # isinstance() allows subclasses.
+        # if len(players) == 0 or not all(isinstance(p, Player) for p in players):
+        #     raise ValueError(
+        #         "Players must be a non empty list of Player objects.")
+
+    def start(self):
+        self.player_turn = random.randint(0, len(self.players) - 1)
+        print("Drawing hands...")
+        for _ in self.players:
+            self.current_player.hand.extend(self.tile_bag.draw_n(
+                Game.HAND_SIZE))
+            self.__increment_turn_counter()
+
+        while not self.is_game_over():
+            self.turn_cycle()
+
+    def turn_cycle(self):
+        """Main turn cycle of the game"""
+        print(f"{self.current_player.name}'s turn")
+        self.board.display()
+        if self.current_player.api:
+            self.current_player.api.on_turn()
+        else:
+            raise NotImplementedError("human player!")
+
+        self.refill_hand(self.current_player)
+
+    def refill_hand(self, player: Player):
+        if len(player.hand) <= Game.HAND_SIZE:
+            player.hand.extend(
+                self.tile_bag.draw_n(Game.HAND_SIZE - len(player.hand))
+            )
+        else:
+            print("CHEATER CHEATER PUMPKIN EATER")
+            player.hand = []
+            player.score -= 1e9
+
+    def is_game_over(self):
+        raise NotImplementedError()
 
     def add_player(self, player: Player):
         self.players.append(player)
 
     def __increment_turn_counter(self):
         self.player_turn = (self.player_turn + 1) % len(self.players)
+        self.current_player = self.players[self.player_turn]
 
     @staticmethod
     def calculate_word_score(word_tiles: list[BoardTile]):
