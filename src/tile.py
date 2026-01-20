@@ -142,7 +142,7 @@ class BoardTile(Tile):
         self.letter = " "
 
     def place(self, lettertile: str | Tile):
-        if self.is_empty():
+        if not self.is_empty():
             raise ValueError("Tile already has a letter")
 
         if isinstance(lettertile, Tile):
