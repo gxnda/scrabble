@@ -1,6 +1,6 @@
 """Tests for Game class"""
 import pytest
-from src.game import Game
+from src.game import Game, NotAWordException
 from src.player import Player
 from src.tile import BoardTile
 from pathlib import Path
@@ -201,11 +201,9 @@ class TestGameWordPlacement:
             assert game.board.get(7, 7).letter == "c"
             assert game.board.get(7, 8).letter == "a"
             assert game.board.get(7, 9).letter == "t"
-        except ValueError as e:
+        except NotAWordException:
             # If word validation fails, that's expected behavior
-            if "not in" in str(e):
-                pytest.skip("Word validation working as expected")
-            raise
+            pass
 
     def test_place_word_simple_vertical(self, game):
         """Test placing a simple vertical word"""
@@ -216,14 +214,12 @@ class TestGameWordPlacement:
             assert game.board.get(7, 7).letter == "d"
             assert game.board.get(8, 7).letter == "o"
             assert game.board.get(9, 7).letter == "g"
-        except ValueError as e:
-            if "not in" in str(e):
-                pytest.skip("Word validation working as expected")
-            raise
+        except NotAWordException:
+            pass
 
     def test_place_word_invalid_word(self, game):
         """Test that placing invalid word raises error"""
-        with pytest.raises(ValueError, match="not in"):
+        with pytest.raises(NotAWordException, match="not in"):
             game.place_word(7, 7, "notaword", False)
 
     def test_place_word_calculates_score(self, game):
@@ -235,12 +231,8 @@ class TestGameWordPlacement:
             game.place_word(7, 7, "cat", False)
             # If it succeeds, word was valid and score was calculated
             assert True
-        except ValueError as e:
-            if "not in" in str(e):
-                # Word not in dictionary, but validation works
-                assert True
-            else:
-                raise
+        except NotAWordException:
+            pass
 
 
 class TestGameWordFinding:

@@ -8,12 +8,12 @@ class Tile:
     Basic scrabble tile, can either be blank or have a letter.
     """
 
-    def __init__(self, letter: str = " "):
+    def __init__(self, letter: str = ""):
         """Initialize a tile with an optional letter (default is blank). Use "?" for blank tiles."""
         self.letter = letter
 
     def __str__(self):
-        return self.letter
+        return self.letter if self.letter else " "
 
     def __bool__(self):
         return self.letter not in [" ", "", None]
@@ -136,10 +136,10 @@ class BoardTile(Tile):
         self.used_up = True
 
     def is_empty(self) -> bool:
-        return self.letter == " "
+        return self.letter in [" ", "", None]
 
     def clear(self):
-        self.letter = " "
+        self.letter = ""
 
     def place(self, lettertile: str | Tile):
         if not self.is_empty():
@@ -156,7 +156,7 @@ class BoardTile(Tile):
         of (score, mult) to be used in running totals
         """
         if self.used_up or self.is_empty():
-            return (0, 0)
+            return (0, 1)  # Return neutral multiplier of 1, not 0
         # NOTE: self.used_up is set in place_word after everything is done.
         letter_score = TileBag.scores[self.letter]
         if self.is_word_multiplier:

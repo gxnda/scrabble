@@ -1,6 +1,6 @@
 """Integration tests for complete Scrabble game scenarios"""
 import pytest
-from src.game import Game
+from src.game import Game, NotAWordException
 from src.player import Player
 from src.tile import TileBag, Tile
 
@@ -143,7 +143,7 @@ class TestGameIntegration:
         # Calculate score again (should not use multiplier)
         score2, mult2 = tile.calculate_score()
         assert score2 == 0  # Used up
-        assert mult2 == 0
+        assert mult2 == 1  # mult always defaults to 1 so it can be chained
 
 
 class TestScrabbleRules:
@@ -270,7 +270,7 @@ class TestEdgeCases:
         """Test placing invalid word raises error"""
         game = Game()
 
-        with pytest.raises(ValueError):
+        with pytest.raises(NotAWordException):
             game.place_word(7, 7, "zzzzzzz", False)
 
     def test_word_too_long_for_board(self):

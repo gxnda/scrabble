@@ -6,6 +6,9 @@ from src.player import Player
 from src.tile import BoardTile
 
 
+class NotAWordException(Exception):
+    pass
+
 class Game:
     def __init__(self):
         self.board = Board()
@@ -29,31 +32,35 @@ class Game:
             total_mult *= mult
         return total_score * total_mult
 
-    def __find_connected(self, row, col, look_vertical: bool) -> list[BoardTile]:
-        offset = col if look_vertical else row
-        for offset in range(offset - 1, -1, -1):
-            tile = self.board.get(
-                row + (offset if look_vertical else 0),
-                col + (offset if not look_vertical else 0),
-            )
-
-            if not tile.letter:
+    def __find_connected(self, row, col, look_vertical: bool):
+        tile = self.board.get(row, col)
+        j = 0
+        while not tile.is_empty():
+            j -= 1
+            try:
+                tile = self.board.get(
+                    row + (j if look_vertical else 0),
+                    col + (j if not look_vertical else 0),
+                )
+            except ValueError:
                 break
-
-        word_tiles = []
-        max_size = self.board.cols if look_vertical else self.board.rows
-        for i in range(offset, max_size):
-            tile = self.board.get(
-                row + (i if look_vertical else 0),
-                col + (i if not look_vertical else 0),
-            )
-
-            if not tile.letter:
+        wordtiles = []
+        j += 1  # get back to the word
+        tile = self.board.get(
+            row + (j if look_vertical else 0),
+            col + (j if not look_vertical else 0),
+        )
+        while not tile.is_empty():
+            wordtiles.append(tile)
+            j += 1
+            try:
+                tile = self.board.get(
+                    row + (j if look_vertical else 0),
+                    col + (j if not look_vertical else 0),
+                )
+            except ValueError:
                 break
-
-            word_tiles.append(tile)
-
-        return word_tiles
+        return wordtiles
 
     def get_connecting_words(
         self, row: int, col: int, word: str, is_vertical: bool
@@ -128,7 +135,7 @@ class Game:
         for connecting in connecting_words:
             parsed_connecting_word = "".join(char.letter for char in connecting)
             if parsed_connecting_word not in self.dictionary:
-                raise ValueError(f"{connecting} is not in {self.dictionary}.")
+                raise NotAWordException(f"{connecting} is not in {self.dictionary}.")
 
             # score all words
             score += Game.calculate_word_score(connecting)
