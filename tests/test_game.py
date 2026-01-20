@@ -253,10 +253,6 @@ class TestGameWordFinding:
         game.board.place(7, 8, "a")
         game.board.place(7, 9, "t")
 
-        print()
-        game.board.display()
-        print()
-
         # Find connected word starting from middle
         connected = game._Game__find_connected(7, 8, False)
         print(list(c.letter for c in connected))
