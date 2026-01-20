@@ -2,6 +2,9 @@ import time
 from copy import deepcopy
 
 
+class NotReadyException(Exception):
+    pass
+
 class MoveException(Exception):
     pass
 
@@ -22,15 +25,29 @@ class EarlyExitContextManager:
 
 
 class Api:
-    def __init__(self, game, player):
+    def __init__(self):
+        self.__player = None
+        self.__game = None
+        self.__board = None
+
+        self.__task = None
+        self.__hooked = False
+
+    def hook(self, game, player):
+        if self.__hooked:
+            raise RuntimeError("Stop Messing with shit")
+
         self.__player = player
         self.__game = game
         self.__board = self.__game.board
 
-        self.__task = None
+        self._init()
 
     @property
     def board_size(self) -> tuple[int, int]:
+        if not self.__hooked:
+            raise NotReadyException("Cannot access properties of the board. Game has not been started")
+
         return self.__board.rows, self.__board.cols
 
     @property
@@ -40,9 +57,15 @@ class Api:
 
         THIS IS NOT THE ACTUAL BOARD CLASS BENEDICT DON'T TRY TO CALL RANDOM METHODS
         """
+        if not self.__hooked:
+            raise NotReadyException("Cannot access properties of the board. Game has not been started")
+
         return deepcopy(self.__board.grid)
 
     def get_tiles_in_hand(self) -> list[str]:
+        if not self.__hooked:
+            raise NotReadyException("Cannot access properties of the player. Game has not been started")
+
         return [
             tile.letter for tile in self.__player.hand
         ]
@@ -99,6 +122,9 @@ class Api:
             raise NotImplementedError(f"A task '{task}' is not implemented or is not intended")
 
 
+    def _init(self):
+        """ This method is called when your bot and the game are initialized. """
+        pass
 
     def _on_turn(self) -> None:
         """ This is ur bit silly """
