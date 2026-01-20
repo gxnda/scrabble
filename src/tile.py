@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 from colorama import Back, Fore
 
@@ -111,13 +112,18 @@ class TileBag:
             self.__tiles.append(tiles)
         random.shuffle(self.__tiles)
 
-    def draw(self) -> Tile:
+    def draw(self) -> Optional[Tile]:
         """draw a tile"""
-        return self.__tiles.pop()
+        return self.__tiles.pop() if self.__tiles else None
 
     def draw_n(self, n: int) -> list[Tile]:
         """draw n tiles"""
-        return [self.draw() for _ in range(n)]
+        i = 0
+        tiles: list[Tile] = []
+        while self.__tiles and i < n:
+            i += 1
+            tiles.append(self.draw())
+        return tiles
 
     def __len__(self) -> int:
         return len(self.__tiles)

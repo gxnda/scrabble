@@ -243,10 +243,12 @@ class TestEdgeCases:
     def test_empty_bag_draw(self):
         """Test drawing from empty bag"""
         bag = TileBag()
-        bag.draw_n(100)  # Empty the bag
+        og_len = len(bag)
+        drawn = bag.draw_n(120)  # Empty the bag
+        assert len(drawn) == og_len
+        assert len(bag) == 0
+        assert bag.draw() is None
 
-        with pytest.raises(IndexError):
-            bag.draw()
 
     def test_place_on_occupied_square(self):
         """Test placing letter on occupied square raises error"""
