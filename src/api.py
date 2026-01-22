@@ -4,6 +4,20 @@ from copy import deepcopy
 from .game import Game
 from .dictionary import Dictionary
 
+
+"""
+Hey!
+
+Funny seeing you sneaking around in here.
+When creating your bot, keep in mind that when your bot is run,
+it will not be with this exact file. It will be on the hosts side.
+Any modifications you make here will not work when it comes to a tournament.
+If you have found a bug, say, dont fix it yourself.
+
+"""
+
+
+
 class NotReadyException(Exception):
     pass
 
@@ -34,6 +48,7 @@ class Api:
 
         self.__task = None
         self.__hooked = False
+        self.__hand_is_visible = False
 
     def hook(self, game, player):
         if self.__hooked or not isinstance(game, Game):
@@ -44,6 +59,9 @@ class Api:
         self.__board = self.__game.board
 
         self._init()
+
+        # After starting the bot, we can unhide some info ready for the first round
+        self.__hand_is_visible = True
 
     # Helpers
 
@@ -69,6 +87,9 @@ class Api:
     def get_tiles_in_hand(self) -> list[str]:
         if not self.__hooked:
             raise NotReadyException("Cannot access properties of the player. Game has not been started")
+
+        if not self.__hand_is_visible:
+            raise NotReadyException("Your hand has not yet been delt")
 
         return [
             tile.letter for tile in self.__player.hand
