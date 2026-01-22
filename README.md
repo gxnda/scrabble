@@ -83,6 +83,15 @@ Allows you to skip your turn without doing anything
 ### Additional Methods & Attributes
 Your handy dandy Api has some more in-store for you ;)
 
+#### Getting Games Dictionary
+
+```python
+  def get_dictionary(self) -> Dictionary:
+    """ Returns a dictionary of all valid words in play """
+    ...
+
+```
+
 #### Getting Current Letters / Hand
 
 ```python
