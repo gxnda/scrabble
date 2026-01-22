@@ -1,6 +1,8 @@
 import time
 from copy import deepcopy
 
+from .game import Game
+from .dictionary import Dictionary
 
 class NotReadyException(Exception):
     pass
@@ -34,7 +36,7 @@ class Api:
         self.__hooked = False
 
     def hook(self, game, player):
-        if self.__hooked:
+        if self.__hooked or not isinstance(game, Game):
             raise RuntimeError("Stop Messing with shit")
 
         self.__player = player
@@ -42,6 +44,8 @@ class Api:
         self.__board = self.__game.board
 
         self._init()
+
+    # Helpers
 
     @property
     def board_size(self) -> tuple[int, int]:
@@ -69,6 +73,14 @@ class Api:
         return [
             tile.letter for tile in self.__player.hand
         ]
+
+    def get_dictionary(self) -> Dictionary:
+        if not self.__hooked:
+            raise NotReadyException("Cannot access properties of the game. Game has not been started")
+
+        return deepcopy(self.__board.dictionary)
+
+    # Actions
 
     def place_word(self, word: str, is_vertical: bool, x: int, y: int) -> None:
         """ Calling this method ends your turn instantly """
