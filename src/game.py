@@ -1,5 +1,6 @@
 import random
 from pathlib import Path
+from typing import List, Optional
 
 from src.board import Board
 from src.dictionary import Dictionary
@@ -14,7 +15,7 @@ class NotAWordException(Exception):
 class Game:
     HAND_SIZE = 7
 
-    def __init__(self, players=None):
+    def __init__(self, players: Optional[List[Player]] = None):
         if not players:
             players = []
         self.board = Board()
