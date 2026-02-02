@@ -10,8 +10,10 @@ from src.tile import BoardTile, TileBag
 class NotAWordException(Exception):
     pass
 
+
 class Game:
     HAND_SIZE = 7
+
     def __init__(self, players=None):
         if not players:
             players = []
@@ -32,8 +34,8 @@ class Game:
         self.player_turn = random.randint(0, len(self.players) - 1)
         print("Drawing hands...")
         for _ in self.players:
-            self.current_player.hand.extend(self.tile_bag.draw_n(
-                Game.HAND_SIZE))
+            assert self.current_player
+            self.current_player.hand.extend(self.tile_bag.draw_n(Game.HAND_SIZE))
             self.__increment_turn_counter()
 
         while not self.is_game_over():
@@ -41,6 +43,7 @@ class Game:
 
     def turn_cycle(self):
         """Main turn cycle of the game"""
+        assert self.current_player
         print(f"{self.current_player.name}'s turn")
         self.board.display()
         if self.current_player.api:
@@ -51,19 +54,26 @@ class Game:
         self.refill_hand(self.current_player)
 
     def refill_hand(self, player: Player):
+        """
+        Refills a given players hand
+        """
         if len(player.hand) <= Game.HAND_SIZE:
-            player.hand.extend(
-                self.tile_bag.draw_n(Game.HAND_SIZE - len(player.hand))
-            )
+            player.hand.extend(self.tile_bag.draw_n(Game.HAND_SIZE - len(player.hand)))
         else:
-            print("CHEATER CHEATER PUMPKIN EATER")
-            player.hand = []
-            player.score -= 1e9
+            raise ValueError(
+                f"Cheater! hand too big: {player.hand} > {Game.HAND_SIZE}."
+            )
 
     def is_game_over(self):
+        """
+        Checks if the game is over
+        """
         raise NotImplementedError()
 
     def add_player(self, player: Player):
+        """
+        Adds player to the game
+        """
         self.players.append(player)
 
     def __increment_turn_counter(self):
