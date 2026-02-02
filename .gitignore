@@ -2,3 +2,4 @@
 src/__pycache__/*
 *.xml
 /.idea
+tests/__pycache__/*
