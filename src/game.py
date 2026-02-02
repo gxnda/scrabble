@@ -23,7 +23,7 @@ class Game:
         dict_path = Path(__file__).parent.parent / "dicts" / "sowpods.txt"
         self.dictionary = Dictionary(dict_path)
         self.players: list[Player] = players
-        self.current_player: Player = self.players[0]
+        self.current_player: Player = self.players[0] if self.players else None
         self.player_turn: int = 0
 
         # isinstance() allows subclasses.
@@ -138,15 +138,17 @@ class Game:
         # First it checks all words in the perpendicular direction for each char
         for i in range(len(word)):
             # goes left until no word
-            words.append(
-                self.__find_connected(
-                    row + (i if is_vertical else 0),
-                    col + (i if not is_vertical else 0),
-                    not is_vertical,
-                )
+            found = self.__find_connected(
+                row + (i if is_vertical else 0),
+                col + (i if not is_vertical else 0),
+                not is_vertical,
             )
+            if found:
+                words.append(found)
 
-        words.append(self.__find_connected(row, col, is_vertical))
+        found = self.__find_connected(row, col, is_vertical)
+        if found: # it returns empty list by default which is stupid ik
+            words.append(found)
 
         return words
 
@@ -215,7 +217,6 @@ class Game:
         connecting_words = self.get_connecting_words(
             start_row, start_col, word, is_vertical
         )
-
         for connecting in connecting_words:
             parsed_connecting_word = "".join(char.letter for char in connecting)
             if parsed_connecting_word not in self.dictionary:
