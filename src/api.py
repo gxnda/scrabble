@@ -1,10 +1,3 @@
-import time
-from copy import deepcopy
-
-from .game import Game
-from .dictionary import Dictionary
-
-
 """
 Hey!
 
@@ -15,7 +8,11 @@ Any modifications you make here will not work when it comes to a tournament.
 If you have found a bug, say, dont fix it yourself.
 
 """
+import time
+from copy import deepcopy
 
+from .game import Game
+from .dictionary import Dictionary
 
 
 class NotReadyException(Exception):
