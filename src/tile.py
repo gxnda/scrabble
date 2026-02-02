@@ -104,6 +104,9 @@ class TileBag:
             self.__tiles.extend([Tile(letter) for _ in range(count)])
         random.shuffle(self.__tiles)
 
+    def is_empty(self):
+        return len(self.__tiles) == 0
+
     def add(self, tiles: Tile | list[Tile]):
         """add a list or one tile to the bag, it gets reshuffled"""
         if isinstance(tiles, list):
