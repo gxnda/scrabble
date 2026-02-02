@@ -7,7 +7,8 @@ from colorama import init
 
 from src.tile import BoardTile
 
-init()
+init()  # sets up colorama
+
 
 class Board:
     """
@@ -51,6 +52,7 @@ class Board:
     def place(self, row, col, letter: str):
         """places a letter at given tile"""
         self.get(row, col).place(letter)
+
 
 if __name__ == "__main__":
     board = Board()
