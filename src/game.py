@@ -187,6 +187,25 @@ class Game:
         except ValueError as e:
             raise e
 
+        # Validate that the word itself is in the dictionary
+        if word.lower() not in self.dictionary:
+            raise NotAWordException(f"{word} is not in {self.dictionary}.")
+
+        # Actually place the letters on the board
+        for i, char in enumerate(word):
+            if is_vertical:
+                tile = self.board.get(start_row + i, start_col)
+            else:
+                tile = self.board.get(start_row, start_col + i)
+
+            # Only place if the tile is empty (not an overlap)
+            if tile.is_empty():
+                self.board.place(
+                    start_row + i if is_vertical else start_row,
+                    start_col if is_vertical else start_col + i,
+                    char
+                )
+
         # check if bingo
         score = 0
         total_used_letters = len(word) - total_overlaps
