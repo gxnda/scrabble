@@ -273,13 +273,14 @@ class TestGameWordFinding:
 
     def test_get_connecting_words(self, game):
         """Test getting all connecting words"""
-        # Place an 'A' that will be connected
-        game.board.place(7, 7, "a")
+        # Place letters that will form an actual word
+        game.board.place(7, 7, "c")
+        game.board.place(7, 8, "a")
 
-        # Get connecting words for placing "CAT" horizontally
+        # Get connecting words for placing "CAT" horizontally (which overlaps with "CA")
         connecting = game.get_connecting_words(7, 7, "cat", False)
 
-        # Should return list of word lists
+        # Should return list of word lists with the main word "CAT"
         assert isinstance(connecting, list)
         assert len(connecting) > 0
 

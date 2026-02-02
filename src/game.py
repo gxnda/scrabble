@@ -57,6 +57,7 @@ class Game:
         self.current_player.play_turn(self)
 
         self.refill_hand(self.current_player)
+        self.__increment_turn_counter()
 
     def refill_hand(self, player: Player):
         """
@@ -143,11 +144,11 @@ class Game:
                 col + (i if not is_vertical else 0),
                 not is_vertical,
             )
-            if found:
+            if found and len(found) > 1:
                 words.append(found)
 
         found = self.__find_connected(row, col, is_vertical)
-        if found: # it returns empty list by default which is stupid ik
+        if found and len(found) > 1:
             words.append(found)
 
         return words
@@ -220,7 +221,7 @@ class Game:
         for connecting in connecting_words:
             parsed_connecting_word = "".join(char.letter for char in connecting)
             if parsed_connecting_word not in self.dictionary:
-                raise NotAWordException(f"{connecting} is not in {self.dictionary}.")
+                raise NotAWordException(f"{parsed_connecting_word} is not in {self.dictionary}.")
 
             # score all words
             score += Game.calculate_word_score(connecting)
