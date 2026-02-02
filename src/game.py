@@ -23,7 +23,7 @@ class Game:
         dict_path = Path(__file__).parent.parent / "dicts" / "sowpods.txt"
         self.dictionary = Dictionary(dict_path)
         self.players: list[Player] = players
-        self.current_player: Player | None = None
+        self.current_player: Player = self.players[0]
         self.player_turn: int = 0
 
         # isinstance() allows subclasses.
@@ -31,9 +31,14 @@ class Game:
         #     raise ValueError(
         #         "Players must be a non empty list of Player objects.")
 
+    def _set_player_turn(self, set_to):
+        self.player_turn = set_to
+        self.current_player = self.players[set_to]
+
+
     def start(self):
         """Sets up the game, and starts the main game loop"""
-        self.player_turn = random.randint(0, len(self.players) - 1)
+        self._set_player_turn(random.randint(0, len(self.players) - 1))
         print("Drawing hands...")
         for _ in self.players:
             assert self.current_player
@@ -49,7 +54,7 @@ class Game:
         assert self.current_player
         print(f"{self.current_player.name}'s turn")
         self.board.display()
-        self.current_player.play_turn()
+        self.current_player.play_turn(self)
 
         self.refill_hand(self.current_player)
 
@@ -68,7 +73,10 @@ class Game:
         """
         Checks if the game is over
         """
-        raise NotImplementedError()
+        bag_empty = self.tile_bag.is_empty()
+        player_out = any(len(player.hand) == 0 for player in self.players)
+        return bag_empty and player_out
+
 
     def add_player(self, player: Player):
         """
@@ -203,3 +211,19 @@ class Game:
 
         for char in all_used_tiles:
             char.use_up()
+
+    def discard_letters(self, player: Player, letters: list[str]):
+        temp_hand = [tile.letter for tile in player.hand]
+        popped = []
+        for letter in letters:
+            try:
+                index = temp_hand.index(letter)
+                popped.append(player.hand.pop(index))
+                temp_hand.pop(index) # as long as no race conditions this is OK
+            except ValueError:
+                raise ValueError(
+                    f"{letter} not in {[tile.letter for tile in player.hand]}")
+
+        # puts all removed back into tile bag - this is exact same Tile obj
+        self.tile_bag.add(popped)
+
