@@ -31,6 +31,7 @@ class Game:
         #         "Players must be a non empty list of Player objects.")
 
     def start(self):
+        """Sets up the game, and starts the main game loop"""
         self.player_turn = random.randint(0, len(self.players) - 1)
         print("Drawing hands...")
         for _ in self.players:
@@ -38,6 +39,7 @@ class Game:
             self.current_player.hand.extend(self.tile_bag.draw_n(Game.HAND_SIZE))
             self.__increment_turn_counter()
 
+        # INFO: Main game loop is here!
         while not self.is_game_over():
             self.turn_cycle()
 
@@ -46,10 +48,7 @@ class Game:
         assert self.current_player
         print(f"{self.current_player.name}'s turn")
         self.board.display()
-        if self.current_player.api:
-            self.current_player.api.on_turn()
-        else:
-            raise NotImplementedError("human player!")
+        self.current_player.play_turn()
 
         self.refill_hand(self.current_player)
 
