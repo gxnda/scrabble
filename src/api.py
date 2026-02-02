@@ -11,7 +11,6 @@ If you have found a bug, say, dont fix it yourself.
 import time
 from copy import deepcopy
 
-from .game import Game
 from .dictionary import Dictionary
 
 
@@ -47,8 +46,13 @@ class Api:
         self.__hooked = False
         self.__hand_is_visible = False
 
-    def hook(self, game, player):
-        if self.__hooked or not isinstance(game, Game):
+    @staticmethod
+    def __get_game_class():
+        from .game import Game
+        return Game
+
+    def hook(self, game: "Game", player):
+        if self.__hooked or not isinstance(game, Api.__get_game_class()):
             raise RuntimeError("Stop Messing with shit")
 
         self.__player = player
@@ -143,7 +147,7 @@ class Api:
             self.__game.place_word(*args)
 
         elif task == "discard":
-            self.__game.discard_letter(*args)
+            self.__game.discard_letters(*args)
 
         elif task == "pass":
             pass
