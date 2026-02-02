@@ -15,3 +15,12 @@ class Player:
     def assign_bot(self, game, bot_class):
         self.api = bot_class()
         self.api.hook(game, self)
+
+    def play_human_turn(self):
+        raise NotImplementedError("Nuh Uh")
+
+    def play_turn(self):
+        if self.api:
+            self.api.on_turn()
+        else:
+            self.play_human_turn()
