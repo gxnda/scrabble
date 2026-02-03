@@ -3,7 +3,6 @@ import pytest
 from src.game import Game, NotAWordException
 from src.player import Player
 from src.tile import BoardTile
-from pathlib import Path
 
 
 class TestGame:
@@ -233,6 +232,41 @@ class TestGameWordPlacement:
             assert True
         except NotAWordException:
             pass
+
+    def test_first_word_must_cover_center(self, game):
+        """Test that first word must cover center square (7, 7)"""
+        # Try placing first word NOT covering center
+        with pytest.raises(ValueError, match="center square"):
+            game.place_word(0, 0, "cat", False)
+
+        # Verify board is still empty
+        assert game.board.is_empty()
+
+        # Now place word covering center - should succeed
+        game.place_word(7, 7, "cat", False)
+        assert not game.board.is_empty()
+
+    def test_subsequent_words_must_connect(self, game):
+        """Test that words after first must connect to existing tiles"""
+        # Place first word at center
+        game.place_word(7, 7, "cat", False)
+
+        # Try placing isolated word - should fail
+        with pytest.raises(ValueError, match="connect to existing tiles"):
+            game.place_word(0, 0, "dog", False)
+
+        # Place word adjacent to existing word - should succeed
+        game.place_word(6, 7, "ace", True)  # Vertical, adjacent to 'c' in 'cat'
+
+    def test_word_with_overlap_is_valid(self, game):
+        """Test that words overlapping existing tiles are valid"""
+        # Place first word
+        game.place_word(7, 7, "cat", False)
+
+        # Place word with overlap (sharing 'a')
+        game.place_word(7, 8, "at", True)  # Vertical at position of 'a'
+
+        # Should succeed since it overlaps
 
 
 class TestGameWordFinding:

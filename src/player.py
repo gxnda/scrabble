@@ -59,6 +59,13 @@ class Player:
                 ))
                 is_vertical = True if (input("Is your word vertical ("
                                              "y/n)").lower() == "y") else False
+                hand_str = [char.letter for char in self.hand]
+                for char in word:
+                    if char not in hand_str:
+                        print("Invalid word, please try again!")
+                        return self.play_human_turn(game)
+                    hand_str.remove(char)
+
                 return game.place_word(start_col, start_row, word, is_vertical)
             case _:
                 print(f"Input {choice} unrecognised, please try again.")

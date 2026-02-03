@@ -132,7 +132,8 @@ class Game:
         self, row: int, col: int, word: str, is_vertical: bool
     ) -> list[list[BoardTile]]:
         """
-        Gets all words connecting to a given word if it was placed on the board.
+        Gets all words (strings longer than 1 char) connecting to a given word
+        if it was placed on the board.
         It does not care if the word is valid.
         """
         words = []
@@ -189,6 +190,44 @@ class Game:
             )
         except ValueError as e:
             raise e
+
+        # Check Scrabble placement rules
+        if self.board.is_empty():
+            # First word must cover center square (7, 7)
+            center_covered = False
+            for i in range(len(word)):
+                check_row = start_row + (i if is_vertical else 0)
+                check_col = start_col + (i if not is_vertical else 0)
+                if check_row == 7 and check_col == 7:
+                    center_covered = True
+                    break
+            if not center_covered:
+                raise ValueError("First word must cover the center square at position (7, 7).")
+        else:
+            # Subsequent words must connect to existing tiles
+            # Either through overlap or by being adjacent
+            if total_overlaps == 0:
+                # No overlap, so check if adjacent to any existing tile
+                has_adjacent = False
+                for i in range(len(word)):
+                    check_row = start_row + (i if is_vertical else 0)
+                    check_col = start_col + (i if not is_vertical else 0)
+
+                    # Check all 4 directions for adjacent tiles
+                    for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                        try:
+                            adjacent_tile = self.board.get(check_row + dr, check_col + dc)
+                            if not adjacent_tile.is_empty():
+                                has_adjacent = True
+                                break
+                        except ValueError:
+                            # Out of bounds, skip
+                            pass
+                    if has_adjacent:
+                        break
+
+                if not has_adjacent:
+                    raise ValueError("Word must connect to existing tiles on the board.")
 
         # Validate that the word itself is in the dictionary
         if word.lower() not in self.dictionary:
