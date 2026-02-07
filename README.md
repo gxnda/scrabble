@@ -83,6 +83,14 @@ Allows you to skip your turn without doing anything
 ### Additional Methods & Attributes
 Your handy dandy Api has some more in-store for you ;)
 
+#### Checking Moves
+
+```python
+  def check_placement(self, word: str, is_vertical: bool, x: int, y: int) -> bool:
+    """ Returns a blanket True/False value for if the move is legal """
+    ...
+```
+
 #### Getting Games Dictionary
 
 ```python
