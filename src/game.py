@@ -175,21 +175,17 @@ class Game:
                 total_overlaps += 1
         return total_overlaps
 
-    def place_word(self, start_row: int, start_col: int, word: str, is_vertical: bool):
-        """
-        Places a word on the board.
-        Any overlap should be included.
-
-        Ends the current players turn afterwards.
-        """
-        all_used_tiles = []
+    def is_placement_valid(self, start_row: int, start_col: int, word: str, is_vertical: bool, raise_errors=False):
         # raises error if word does not fit / overlaps incorrectly
         try:
             total_overlaps = self._check_word_fits(
                 start_row, start_col, word, is_vertical
             )
-        except ValueError as e:
-            raise e
+        except Exception as e:
+            if raise_errors:
+                raise e
+
+            return False
 
         # Check Scrabble placement rules
         if self.board.is_empty():
@@ -201,11 +197,15 @@ class Game:
                 if check_row == 7 and check_col == 7:
                     center_covered = True
                     break
+
             if not center_covered:
-                raise ValueError("First word must cover the center square at position (7, 7).")
+                if raise_errors:
+                    raise ValueError("First word must cover the center square at position (7, 7).")
+                return False
         else:
             # Subsequent words must connect to existing tiles
             # Either through overlap or by being adjacent
+
             if total_overlaps == 0:
                 # No overlap, so check if adjacent to any existing tile
                 has_adjacent = False
@@ -223,15 +223,39 @@ class Game:
                         except ValueError:
                             # Out of bounds, skip
                             pass
+
                     if has_adjacent:
                         break
 
                 if not has_adjacent:
-                    raise ValueError("Word must connect to existing tiles on the board.")
+                    if raise_errors:
+                        raise ValueError("Word must connect to existing tiles on the board.")
+                    return False
 
         # Validate that the word itself is in the dictionary
         if word.lower() not in self.dictionary:
-            raise NotAWordException(f"{word} is not in {self.dictionary}.")
+            if raise_errors:
+                raise NotAWordException(f"{word} is not in {self.dictionary}.")
+            return False
+
+        return True
+
+    def place_word(self, start_row: int, start_col: int, word: str, is_vertical: bool):
+        """
+        Places a word on the board.
+        Any overlap should be included.
+
+        Ends the current players turn afterwards.
+        """
+
+        valid = self.is_placement_valid(start_row, start_col, word, is_vertical, raise_errors=True)
+
+        if not valid:
+            return
+
+        total_overlaps = self._check_word_fits(
+            start_row, start_col, word, is_vertical
+        )
 
         # Actually place the letters on the board
         for i, char in enumerate(word):
@@ -248,6 +272,7 @@ class Game:
                     char
                 )
 
+
         # check if bingo
         score = 0
         total_used_letters = len(word) - total_overlaps
@@ -257,6 +282,8 @@ class Game:
         connecting_words = self.get_connecting_words(
             start_row, start_col, word, is_vertical
         )
+
+        all_used_tiles = []
         for connecting in connecting_words:
             parsed_connecting_word = "".join(char.letter for char in connecting)
             if parsed_connecting_word not in self.dictionary:

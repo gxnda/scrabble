@@ -47,7 +47,7 @@ class Api:
         self.__hand_is_visible = False
 
     @staticmethod
-    def __get_game_class():
+    def __get_game_class(): # Cursed. But it stops a circular import error
         from .game import Game
         return Game
 
@@ -102,6 +102,11 @@ class Api:
 
         return deepcopy(self.__board.dictionary)
 
+    def check_placement(self, word: str, is_vertical: bool, x: int, y: int) -> None:
+        if not self.__hooked:
+            raise NotReadyException("Cannot access properties of the board. Game has not been started")
+
+        return self.__game.is_placement_valid(word, is_vertical, x, y, raise_errors=False)
     # Actions
 
     def place_word(self, word: str, is_vertical: bool, x: int, y: int) -> None:
