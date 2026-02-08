@@ -9,7 +9,7 @@ U dont get a contents section
 To start, import the Api Module from api.py and create a new class inheriting from Api
 
 ```python
-from api import Api  # Likely different for you
+from api import Api  # Likely different for you. Likely src/api
 
 class MyBot(Api):
   def __init__(self):
