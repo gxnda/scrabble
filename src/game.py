@@ -49,6 +49,9 @@ class Game:
         while not self.is_game_over():
             self.turn_cycle()
 
+        print("Game over!")
+        print([(player.name, player.score) for player in self.players])
+
     def turn_cycle(self):
         """Main turn cycle of the game"""
         assert self.current_player
