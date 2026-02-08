@@ -5,7 +5,7 @@ from typing import List, Optional
 from src.board import Board
 from src.dictionary import Dictionary
 from src.player import Player
-from src.tile import BoardTile, TileBag
+from src.tile import BoardTile, TileBag, Tile
 
 
 class NotAWordException(Exception):
@@ -238,6 +238,40 @@ class Game:
                 raise NotAWordException(f"{word} is not in {self.dictionary}.")
             return False
 
+
+        # Actually place the letters on the board
+        over_written = []
+        for i, char in enumerate(word):
+            if is_vertical:
+                tile = self.board.get(start_row + i, start_col)
+            else:
+                tile = self.board.get(start_row, start_col + i)
+
+            # Only place if the tile is empty (not an overlap)
+            if tile.is_empty():
+                self.board.place(
+                    start_row + i if is_vertical else start_row,
+                    start_col if is_vertical else start_col + i,
+                    char
+                )
+                over_written.append((start_row + i if is_vertical else start_row,
+                                     start_col if is_vertical else start_col + i))
+
+
+        connecting_words = self.get_connecting_words(
+            start_row, start_col, word, is_vertical
+        )
+
+        for connecting in connecting_words:
+            parsed_connecting_word = "".join(char.letter for char in connecting)
+            if parsed_connecting_word not in self.dictionary:
+                for (row, col) in over_written:
+                    self.board.get(row, col).clear()
+
+                if raise_errors:
+                    raise NotAWordException(f"{parsed_connecting_word} is not in {self.dictionary}.")
+                return False
+
         return True
 
     def place_word(self, start_row: int, start_col: int, word: str, is_vertical: bool):
@@ -296,7 +330,11 @@ class Game:
                 if char not in all_used_tiles:
                     all_used_tiles.append(char)
 
+        hand = self.current_player.hand
         for char in all_used_tiles:
+            if char in hand:
+                hand.remove(Tile(char.letter))
+                print(hand, char)
             char.use_up()
 
     def discard_letters(self, player: Player, letters: list[str]):

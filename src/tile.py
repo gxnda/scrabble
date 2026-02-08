@@ -19,6 +19,15 @@ class Tile:
     def __bool__(self):
         return self.letter not in [" ", "", None]
 
+    def __eq__(self, other):
+        if type(other) is str:
+            return self.letter == other
+
+        if isinstance(other, Tile):
+            return self.letter == other.letter
+
+        raise ValueError("Cant Compare Tile To Something Silly", type(other))
+
 
 class TileBag:
     """Glorified hashmap of tiles"""
@@ -130,6 +139,7 @@ class TileBag:
 
     def __len__(self) -> int:
         return len(self.__tiles)
+
 
 
 class BoardTile(Tile):
