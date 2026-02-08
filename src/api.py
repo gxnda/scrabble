@@ -58,6 +58,7 @@ class Api:
         self.__player = player
         self.__game = game
         self.__board = self.__game.board
+        self.__hooked = True
 
         self._init()
 
@@ -100,7 +101,7 @@ class Api:
         if not self.__hooked:
             raise NotReadyException("Cannot access properties of the game. Game has not been started")
 
-        return deepcopy(self.__board.dictionary)
+        return deepcopy(self.__game.dictionary)
 
     def check_placement(self, word: str, is_vertical: bool, x: int, y: int) -> bool:
         if not self.__hooked:
