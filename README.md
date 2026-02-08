@@ -2,6 +2,10 @@
 
 U dont get a contents section
 
+## Rules (May change / update when u guys break shit)
+- One file only.
+- Dont get too silly
+
 ## Making A Bot
 
 ### Creation
