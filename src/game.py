@@ -334,7 +334,6 @@ class Game:
         for char in all_used_tiles:
             if char in hand:
                 hand.remove(Tile(char.letter))
-                print(hand, char)
             char.use_up()
 
     def discard_letters(self, player: Player, letters: list[str]):
