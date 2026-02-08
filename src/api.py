@@ -154,7 +154,7 @@ class Api:
             self.__game.place_word(*args)
 
         elif task == "discard":
-            self.__game.discard_letters(*args)
+            self.__game.discard_letters(self.__player, *args)
 
         elif task == "pass":
             pass
