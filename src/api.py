@@ -107,7 +107,8 @@ class Api:
         if not self.__hooked:
             raise NotReadyException("Cannot access properties of the board. Game has not been started")
 
-        return self.__game.is_placement_valid(word, is_vertical, x, y, raise_errors=False)
+        return self.__game.is_placement_valid(y, x, word, is_vertical,
+                                              raise_errors=False)
     # Actions
 
     def place_word(self, word: str, is_vertical: bool, x: int, y: int) -> None:
