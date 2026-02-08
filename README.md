@@ -2,6 +2,13 @@
 
 U dont get a contents section
 
+## Rules (May change / update when u guys break shit)
+- One file only.
+- No Vibe Coding
+- No Ripping Other Solutions
+- Deadline: Sunday 15th @ 7pm
+- Dont get too silly
+
 ## Making A Bot
 
 ### Creation
@@ -9,7 +16,7 @@ U dont get a contents section
 To start, import the Api Module from api.py and create a new class inheriting from Api
 
 ```python
-from api import Api  # Likely different for you
+from api import Api  # Likely different for you. Likely src/api
 
 class MyBot(Api):
   def __init__(self):
@@ -82,6 +89,14 @@ Allows you to skip your turn without doing anything
 
 ### Additional Methods & Attributes
 Your handy dandy Api has some more in-store for you ;)
+
+#### Checking Moves
+
+```python
+  def check_placement(self, word: str, is_vertical: bool, x: int, y: int) -> bool:
+    """ Returns a blanket True/False value for if the move is legal """
+    ...
+```
 
 #### Getting Games Dictionary
 
