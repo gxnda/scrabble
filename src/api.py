@@ -115,7 +115,7 @@ class Api:
         if type(word) is not str or type(is_vertical) is not bool and type(x) is not int and type(y) is not int:
             raise MoveException(f"Invalid arguments passed to Api.place_word(word: str, is_vertical: bool, x: int, y: int)")
 
-        self.__task = ("place", (word, is_vertical, x, y))
+        self.__task = ("place", (y, x, word, is_vertical))
         raise EarlyExitException
 
     def discard_letters(self, letters: list[str]) -> None:
