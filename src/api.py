@@ -102,7 +102,7 @@ class Api:
 
         return deepcopy(self.__board.dictionary)
 
-    def check_placement(self, word: str, is_vertical: bool, x: int, y: int) -> None:
+    def check_placement(self, word: str, is_vertical: bool, x: int, y: int) -> bool:
         if not self.__hooked:
             raise NotReadyException("Cannot access properties of the board. Game has not been started")
 
