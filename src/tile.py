@@ -177,15 +177,17 @@ class BoardTile(Tile):
         Calculates score for this tile, returns a tuple
         of (score, mult) to be used in running totals
         """
-        if self.used_up or self.is_empty():
-            return (0, 1)  # Return neutral multiplier of 1, not 0
         # NOTE: self.used_up is set in place_word after everything is done.
         letter_score = TileBag.scores[self.letter]
-        if self.is_word_multiplier:
-            return (letter_score, self.multiplier)
-
-        letter_score *= self.multiplier
-        return (letter_score, 1)
+        if self.is_empty():
+            return 0, 1  # Return neutral multiplier of 1, not 0
+        elif self.used_up:
+            return letter_score, 1
+        elif self.is_word_multiplier:
+            return letter_score, self.multiplier
+        else:
+            letter_score *= self.multiplier
+            return letter_score, 1
 
     @classmethod
     def quick_create(cls, creation_str: str):
