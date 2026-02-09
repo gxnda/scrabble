@@ -108,6 +108,9 @@ class Game:
         return total_score * total_mult
 
     def __find_connected(self, row, col, look_vertical: bool):
+        """
+        finds all the strings connected to a given row and column
+        """
         tile = self.board.get(row, col)
         j = 0
         while not tile.is_empty():
@@ -247,8 +250,7 @@ class Game:
                 raise NotAWordException(f"{word} is not in {self.dictionary}.")
             return False
 
-
-        # Actually place the letters on the board
+        # place the letters on the board then remove them again
         over_written = []
         for i, char in enumerate(word):
             if is_vertical:
@@ -302,6 +304,7 @@ class Game:
             start_row, start_col, word, is_vertical
         )
 
+        chars_to_remove_from_hand = []
         # Actually place the letters on the board
         for i, char in enumerate(word):
             if is_vertical:
@@ -316,7 +319,7 @@ class Game:
                     start_col if is_vertical else start_col + i,
                     char
                 )
-
+                chars_to_remove_from_hand.append(char)
 
         # check if bingo
         score = 0
@@ -341,11 +344,18 @@ class Game:
                 if char not in all_used_tiles:
                     all_used_tiles.append(char)
 
-        hand = self.current_player.hand
         for char in all_used_tiles:
-            if char in hand:
-                hand.remove(Tile(char.letter))
             char.use_up()
+
+        hand_letters = [c.letter for c in self.current_player.hand]
+        for char in chars_to_remove_from_hand:
+            try:
+                idx = hand_letters.index(char)
+            except ValueError:
+                idx = hand_letters.index("?")
+            hand_letters.pop(idx)
+            self.current_player.hand.pop(idx)
+
 
     def discard_letters(self, player: Player, letters: list[str]):
         temp_hand = [tile.letter for tile in player.hand]

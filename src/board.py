@@ -47,7 +47,7 @@ class Board:
         """gets given tile"""
         if 0 <= row < self.rows and 0 <= col < self.cols:
             return self.grid[row][col]
-        raise ValueError("Position out of bounds")
+        raise ValueError(f"Position {row=}, {col=} out of bounds")
 
     def place(self, row, col, letter: str):
         """places a letter at given tile"""
