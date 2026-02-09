@@ -199,6 +199,9 @@ class Game:
 
             return False
 
+        if total_overlaps == len(word):
+            return False
+
         # Check Scrabble placement rules
         if self.board.is_empty():
             # First word must cover center square (7, 7)
