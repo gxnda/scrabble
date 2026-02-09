@@ -6,6 +6,7 @@ from src.board import Board
 from src.dictionary import Dictionary
 from src.player import Player
 from src.tile import BoardTile, TileBag, Tile
+from src.gui import GUI
 
 
 class NotAWordException(Exception):
@@ -15,7 +16,7 @@ class NotAWordException(Exception):
 class Game:
     HAND_SIZE = 7
 
-    def __init__(self, players: Optional[List[Player]] = None):
+    def __init__(self, players: Optional[List[Player]] = None, have_gui=True):
         if not players:
             players = []
         self.board = Board()
@@ -26,10 +27,15 @@ class Game:
         self.current_player: Player = self.players[0] if self.players else None
         self.player_turn: int = 0
 
+        self.gui = None
+        if have_gui:
+            self.gui = GUI(self)
+            self.gui.update()
+
         # isinstance() allows subclasses.
         # if len(players) == 0 or not all(isinstance(p, Player) for p in players):
         #     raise ValueError(
-        #         "Players must be a non empty list of Player objects.")
+        #         "Players must be a non-empty list of Player objects.")
 
     def _set_player_turn(self, set_to):
         self.player_turn = set_to
@@ -55,6 +61,11 @@ class Game:
         print("Game over!")
         print([(player.name, player.score) for player in self.players])
 
+        if self.gui:
+            while True:
+                self.gui.update()
+
+
     def turn_cycle(self):
         """Main turn cycle of the game"""
         assert self.current_player
@@ -64,6 +75,10 @@ class Game:
 
         self.refill_hand(self.current_player)
         self.__increment_turn_counter()
+
+        if self.gui:
+            self.gui.update()
+
         return passed
 
     def refill_hand(self, player: Player):
