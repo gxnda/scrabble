@@ -40,8 +40,8 @@ class Board:
         """displays board with colours"""
         for i, row in enumerate(self.grid):
             print("|".join(str(tile) for tile in row))
-            if i < self.rows - 1:
-                print("-" * (self.cols * 2 - 1))
+            # if i < self.rows - 1:
+            #     print("-" * (self.cols * 2 - 1))
 
     def get(self, row, col):
         """gets given tile"""
