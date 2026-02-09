@@ -46,8 +46,11 @@ class Game:
             self.__increment_turn_counter()
 
         # INFO: Main game loop is here!
-        while not self.is_game_over():
-            self.turn_cycle()
+        consecutive_passes = 0
+        while not self.is_game_over(consecutive_passes):
+            passed = self.turn_cycle()
+            if passed:
+                consecutive_passes += 1
 
         print("Game over!")
         print([(player.name, player.score) for player in self.players])
@@ -57,10 +60,11 @@ class Game:
         assert self.current_player
         print(f"{self.current_player.name}'s turn")
         self.board.display()
-        self.current_player.play_turn(self)
+        passed = self.current_player.play_turn(self) is not None
 
         self.refill_hand(self.current_player)
         self.__increment_turn_counter()
+        return passed
 
     def refill_hand(self, player: Player):
         """
@@ -73,10 +77,12 @@ class Game:
                 f"Cheater! hand too big: {player.hand} > {Game.HAND_SIZE}."
             )
 
-    def is_game_over(self):
+    def is_game_over(self, consecutive_passes):
         """
         Checks if the game is over
         """
+        if consecutive_passes == len(self.players):
+            return True
         bag_empty = self.tile_bag.is_empty()
         player_out = any(len(player.hand) == 0 for player in self.players)
         return bag_empty and player_out

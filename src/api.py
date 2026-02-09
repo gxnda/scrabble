@@ -152,12 +152,14 @@ class Api:
 
         if task == "place":
             self.__game.place_word(*args)
+            return None
 
         elif task == "discard":
             self.__game.discard_letters(self.__player, *args)
+            return None
 
         elif task == "pass":
-            pass
+            return "pass"
 
         else:  # This should never get raised. But I know my coding skills.
             raise NotImplementedError(f"A task '{task}' is not implemented or is not intended")

@@ -17,7 +17,7 @@ class Player:
         self.api = bot_class()
         self.api.hook(game, self)
 
-    def play_human_turn(self, game) -> None:
+    def play_human_turn(self, game) -> str | None:
         """
         Human can:
         exchange
@@ -45,9 +45,10 @@ class Player:
                     "Choose the letters you would like to "
                     "exchange, e.g. 'a b c d e' to exchange [a], "
                     "[b], [c], [d], [e] from your hand.").split(" ")
-                return game.discard_letters(self, letters)
-            case 2:
+                game.discard_letters(self, letters)
                 return None
+            case 2:
+                return "pass"
             case 3:
                 word = input("What word would you like to play? Remember to "
                              "include any overlap.")
@@ -71,7 +72,7 @@ class Player:
                 print(f"Input {choice} unrecognised, please try again.")
                 return self.play_human_turn(game)
 
-    def play_turn(self, game):
+    def play_turn(self, game) -> str | None:
         if self.api:
             return self.api.on_turn()
         return self.play_human_turn(game)
