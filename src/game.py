@@ -356,6 +356,8 @@ class Game:
             hand_letters.pop(idx)
             self.current_player.hand.pop(idx)
 
+        self.current_player.score += score
+
 
     def discard_letters(self, player: Player, letters: list[str]):
         temp_hand = [tile.letter for tile in player.hand]
