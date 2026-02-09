@@ -46,7 +46,7 @@ class Player:
                     "exchange, e.g. 'a b c d e' to exchange [a], "
                     "[b], [c], [d], [e] from your hand.").split(" ")
                 game.discard_letters(self, letters)
-                return None
+                return "pass"
             case 2:
                 return "pass"
             case 3:

@@ -156,7 +156,7 @@ class Api:
 
         elif task == "discard":
             self.__game.discard_letters(self.__player, *args)
-            return None
+            return "pass"
 
         elif task == "pass":
             return "pass"
