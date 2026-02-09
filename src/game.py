@@ -281,6 +281,8 @@ class Game:
                     raise NotAWordException(f"{parsed_connecting_word} is not in {self.dictionary}.")
                 return False
 
+        for (row, col) in over_written:
+            self.board.get(row, col).clear()
         return True
 
     def place_word(self, start_row: int, start_col: int, word: str, is_vertical: bool):
